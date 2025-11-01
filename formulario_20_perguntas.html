@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Questionário — 20 Perguntas</title>
+  <style>
+    :root{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+    body{max-width:880px;margin:28px auto;padding:20px;background:#f7f8fb;border-radius:12px}
+    h1{font-size:24px;margin-bottom:6px}
+    p.lead{color:#444;margin-top:0}
+    form{background:#fff;padding:18px;border-radius:10px;box-shadow:0 6px 20px rgba(20,30,60,0.06)}
+    .q{margin-bottom:14px}
+    label{display:block;font-weight:600;margin-bottom:6px}
+    input[type=text], input[type=email], textarea, select{width:100%;padding:8px 10px;border-radius:6px;border:1px solid #ddd}
+    textarea{min-height:80px}
+    .row{display:flex;gap:12px}
+    .col{flex:1}
+    .actions{text-align:right;margin-top:12px}
+    button{background:#0b63d6;color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer}
+    .note{font-size:13px;color:#666}
+    .bank{background:#f0f4ff;padding:12px;border-radius:8px;margin-top:12px}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <h1>Questionário — 20 Perguntas</h1>
+  <p class="lead">Preencha o formulário. Para receber as respostas finais, é necessário efetuar o pagamento conforme indicado após o envio.</p>
+
+  <form id="quizForm">
+    <div class="q"><label>1) Nome completo</label><input type="text" name="q1" required></div>
+    <div class="q"><label>2) E-mail</label><input type="email" name="q2" required></div>
+    <div class="q"><label>3) Idade</label><input type="text" name="q3"></div>
+    <div class="q"><label>4) Cidade</label><input type="text" name="q4"></div>
+    <div class="q"><label>5) Qual o seu principal objetivo?</label><textarea name="q5"></textarea></div>
+    <div class="q"><label>6) Pergunta de escolha</label>
+      <select name="q6">
+        <option value="a">Opção A</option>
+        <option value="b">Opção B</option>
+        <option value="c">Opção C</option>
+      </select>
+    </div>
+    <div class="q"><label>7) Informe um contacto alternativo</label><input type="text" name="q7"></div>
+    <div class="q"><label>8) Descreva uma experiência relevante</label><textarea name="q8"></textarea></div>
+    <div class="q"><label>9) Nível de conhecimento (0-10)</label><input type="text" name="q9"></div>
+    <div class="q"><label>10) Já participou disto antes?</label>
+      <div><label><input type="radio" name="q10" value="sim"> Sim</label> <label><input type="radio" name="q10" value="nao"> Não</label></div>
+    </div>
+    <div class="q"><label>11) Qual a sua formação?</label><input type="text" name="q11"></div>
+    <div class="q"><label>12) Disponibilidade (horas/semana)</label><input type="text" name="q12"></div>
+    <div class="q"><label>13) Objetivos a curto prazo</label><textarea name="q13"></textarea></div>
+    <div class="q"><label>14) Objetivos a médio prazo</label><textarea name="q14"></textarea></div>
+    <div class="q"><label>15) Objetivos a longo prazo</label><textarea name="q15"></textarea></div>
+    <div class="q"><label>16) O que espera receber com as respostas?</label><textarea name="q16"></textarea></div>
+    <div class="q"><label>17) Qual o seu setor de atividade?</label><input type="text" name="q17"></div>
+    <div class="q"><label>18) Tem portfolio ou site?</label><input type="text" name="q18"></div>
+    <div class="q"><label>19) Referência adicional</label><input type="text" name="q19"></div>
+    <div class="q"><label>20) Comentários finais</label><textarea name="q20"></textarea></div>
+    <div class="actions">
+      <button type="submit">Enviar formulário</button>
+    </div>
+    <div id="afterSubmit" class="hidden">
+      <div class="bank">
+        <p class="note"><strong>Instruções para pagamento</strong></p>
+        <p class="note">Para receber as respostas finais, por favor efetue a transferência bancária em Kwanzas para os dados bancários abaixo e, em seguida, registe o comprovativo (número de referência) no campo indicado.</p>
+        <p id="bankDetails" style="font-family:monospace;white-space:pre-wrap"></p>
+        <div style="margin-top:10px"><label>Montante (Kz)</label><input type="text" id="amount" placeholder="Ex: 45000"></div>
+        <div style="margin-top:8px"><label>Número de referência do comprovativo</label><input type="text" id="ref" placeholder="Ex: TRX123456"></div>
+        <div style="margin-top:10px;text-align:right"><button id="confirmPay">Confirmar pagamento (registar)</button></div>
+      </div>
+      <p class="note" style="margin-top:12px">Depois de confirmar, as suas respostas serão registadas e o titular receberá o comprovativo para verificar o pagamento.</p>
+    </div>
+  </form>
+
+  <script>
+    const iban = `0051 0000 15342958101 66`;
+    const titular = `Alexandre Martins Gonçalo Da costa ventura`;
+    document.getElementById('bankDetails').textContent = `IBAN: ${iban}\nTitular: ${titular}`;
+    const form = document.getElementById('quizForm');
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      const data = new FormData(form);
+      const answers = {};
+      for(const [k,v] of data.entries()) answers[k]=v;
+      localStorage.setItem('lastAnswers', JSON.stringify(answers));
+      document.getElementById('afterSubmit').classList.remove('hidden');
+      document.getElementById('afterSubmit').scrollIntoView({behavior:'smooth'});
+    });
+    document.getElementById('confirmPay').addEventListener('click', function(){
+      const amount = document.getElementById('amount').value.trim();
+      const ref = document.getElementById('ref').value.trim();
+      if(!amount || !ref){
+        alert('Por favor indique o montante e o número de referência do comprovativo.');
+        return;
+      }
+      const rc = {amount, ref, time: new Date().toISOString()};
+      localStorage.setItem('paymentRecord', JSON.stringify(rc));
+      alert('Comprovativo registado localmente. O titular deverá verificar a transferência. Obrigado.');
+    });
+  </script>
+</body>
+</html>
